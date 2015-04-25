@@ -31,12 +31,13 @@ class OverviewWindow(Gtk.Window):
         time_box = self.create_time_label(datetime.datetime.now())
 
         switch = Gtk.Switch()
+        switch.set_valign(Gtk.Align.CENTER)
         note_label = Gtk.Label()
         note_label.set_markup(
             '<span font_size="medium">{}</span>'.format('Good Morning')
         )
 
-        row.pack_start(time_box, expand=True, fill=True, padding=5)
+        row.pack_start(time_box, expand=False, fill=True, padding=5)
         row.pack_start(note_label, expand=True, fill=True, padding=0)
         row.pack_start(switch, expand=False, fill=True, padding=5)
         return row
