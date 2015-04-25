@@ -32,6 +32,7 @@ class OverviewWindow(Gtk.Window):
 
         switch = Gtk.Switch()
         switch.set_valign(Gtk.Align.CENTER)
+
         note_label = Gtk.Label()
         note_label.set_markup(
             '<span font_size="medium">{}</span>'.format('Good Morning')
