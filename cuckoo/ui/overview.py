@@ -1,9 +1,16 @@
 import datetime
+import random
 
 from gi.repository import Gtk
 
 
 class OverviewWindow(Gtk.Window):
+
+    def create_header_bar(self):
+        bar = Gtk.HeaderBar()
+        bar.set_title('Cuckoo')
+        bar.set_show_close_button(True)
+        return bar
 
     def create_time_label(self, time_obj):
         time_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -13,7 +20,8 @@ class OverviewWindow(Gtk.Window):
         ampm_label.set_valign(Gtk.Align.BASELINE)
 
         time_str = '<span font="sans 30">{}</span>'.format(
-            time_obj.strftime('%I:%M')
+            # time_obj.strftime('%I:%M')
+            '{}:{}'.format(random.randrange(1, 12), random.randrange(59))
         )
         ampm_str = '<span font="sans 10">{}</span>'.format(
             time_obj.strftime('%p').lower()
@@ -45,9 +53,15 @@ class OverviewWindow(Gtk.Window):
 
     def __init__(self):
         super().__init__(title='Cuckoo')
-        self.set_default_size(400, 200)
-        scrolled_window = Gtk.ScrolledWindow()
+        self.set_default_size(500, 345)
+        self.set_border_width(1)
+        self.set_titlebar(self.create_header_bar())
 
+        # self.set_default_icon_from_file(
+        #     '/home/john/Repositories/github/cuckoo/media/cuckoo.svg'
+        # )
+
+        scrolled_window = Gtk.ScrolledWindow()
         alarms = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         for _ in range(5):
             alarms.pack_start(
