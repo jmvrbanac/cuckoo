@@ -1,15 +1,26 @@
 import datetime
+import os
 import random
 
+from cuckoo import utils
 from gi.repository import Gtk
 
 
 class OverviewWindow(Gtk.Window):
 
+    def more_btn_clicked(self, widget):
+        print('bam')
+
     def create_header_bar(self):
         bar = Gtk.HeaderBar()
         bar.set_title('Cuckoo')
         bar.set_show_close_button(True)
+        bar.set_property('border-width', 0)
+
+        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        more_btn.set_relief(Gtk.ReliefStyle.NONE)
+        more_btn.connect('clicked', self.more_btn_clicked)
+        bar.pack_start(more_btn)
         return bar
 
     def create_time_label(self, time_obj):
@@ -37,6 +48,8 @@ class OverviewWindow(Gtk.Window):
     def create_alarm_row(self):
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         time_box = self.create_time_label(datetime.datetime.now())
+        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        more_btn.set_relief(Gtk.ReliefStyle.NONE)
 
         switch = Gtk.Switch()
         switch.set_valign(Gtk.Align.CENTER)
@@ -49,6 +62,7 @@ class OverviewWindow(Gtk.Window):
         row.pack_start(time_box, expand=False, fill=True, padding=5)
         row.pack_start(note_label, expand=True, fill=True, padding=0)
         row.pack_start(switch, expand=False, fill=True, padding=5)
+        row.pack_start(more_btn, expand=False, fill=True, padding=5)
         return row
 
     def __init__(self):
@@ -57,9 +71,10 @@ class OverviewWindow(Gtk.Window):
         self.set_border_width(1)
         self.set_titlebar(self.create_header_bar())
 
-        # self.set_default_icon_from_file(
-        #     '/home/john/Repositories/github/cuckoo/media/cuckoo.svg'
-        # )
+        # TODO(jmvrbanac): Fix icon sourcing
+        icon_path = utils.get_media_path('clock.svg')
+        if os.path.exists(icon_path):
+            self.set_default_icon_from_file(icon_path)
 
         scrolled_window = Gtk.ScrolledWindow()
         alarms = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
