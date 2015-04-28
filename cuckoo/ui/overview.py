@@ -2,7 +2,7 @@ import datetime
 import os
 import random
 
-from cuckoo import utils
+from cuckoo import utils, alarm
 from gi.repository import Gtk
 
 
@@ -31,8 +31,7 @@ class OverviewWindow(Gtk.Window):
         ampm_label.set_valign(Gtk.Align.BASELINE)
 
         time_str = '<span font="sans 30">{}</span>'.format(
-            # time_obj.strftime('%I:%M')
-            '{}:{}'.format(random.randrange(1, 12), random.randrange(59))
+            time_obj.strftime('%I:%M')
         )
         ampm_str = '<span font="sans 10">{}</span>'.format(
             time_obj.strftime('%p').lower()
@@ -45,9 +44,9 @@ class OverviewWindow(Gtk.Window):
         time_box.pack_start(ampm_label, expand=False, fill=False, padding=0)
         return time_box
 
-    def create_alarm_row(self):
+    def create_alarm_row(self, alarm):
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        time_box = self.create_time_label(datetime.datetime.now())
+        time_box = self.create_time_label(alarm.start_time)
         more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
 
@@ -70,6 +69,7 @@ class OverviewWindow(Gtk.Window):
         self.set_default_size(500, 345)
         self.set_border_width(1)
         self.set_titlebar(self.create_header_bar())
+        self.alarm_manager = alarm.AlarmManager()
 
         # TODO(jmvrbanac): Fix icon sourcing
         icon_path = utils.get_media_path('clock.svg')
@@ -78,9 +78,13 @@ class OverviewWindow(Gtk.Window):
 
         scrolled_window = Gtk.ScrolledWindow()
         alarms = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        for _ in range(5):
+        for _ in range(1):
+            alarm_obj = alarm.Alarm(
+                utils.format_time_str('11:20 pm'),
+                utils.get_media_path('alarm.wav')
+            )
             alarms.pack_start(
-                self.create_alarm_row(),
+                self.create_alarm_row(alarm_obj),
                 expand=False,
                 fill=True,
                 padding=5
