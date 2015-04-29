@@ -23,7 +23,7 @@ class AlarmManager(object):
 
     def __init__(self):
         self.alarms = []
-        GObject.timeout_add(1000, self._handle_alarms)
+        self._handle_alarms()
 
     def add(self, alarm):
         self.alarms.append(alarm)
@@ -35,4 +35,7 @@ class AlarmManager(object):
         alarms_to_check = [alarm for alarm in self.alarms if alarm.activated]
         for alarm in alarms_to_check:
             if alarm.start_time == utils.get_current_time():
-                alarm.sound()
+                if not alarm.player.playing:
+                    alarm.sound()
+
+        GObject.timeout_add(1000, self._handle_alarms)

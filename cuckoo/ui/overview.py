@@ -80,9 +80,11 @@ class OverviewWindow(Gtk.Window):
         alarms = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         for _ in range(1):
             alarm_obj = alarm.Alarm(
-                utils.format_time_str('11:20 pm'),
-                utils.get_media_path('alarm.wav')
+                utils.get_current_time(),
+                utils.get_media_uri('alarm.wav')
             )
+            alarm_obj.activate()
+            self.alarm_manager.add(alarm_obj)
             alarms.pack_start(
                 self.create_alarm_row(alarm_obj),
                 expand=False,
