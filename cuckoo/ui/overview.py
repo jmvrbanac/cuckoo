@@ -5,6 +5,37 @@ import random
 from cuckoo import utils, alarm
 from gi.repository import Gtk
 
+
+class TimeText(Gtk.Box):
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        self._time = value
+        time_str = '<span font="sans 30">{}</span>'.format(
+            value.strftime('%I:%M')
+        )
+        ampm_str = '<span font="sans 10">{}</span>'.format(
+            value.strftime('%p').lower()
+        )
+
+        self.time_label.set_markup(time_str)
+        self.ampm_label.set_markup(ampm_str)
+
+    def __init__(self, time):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.time_label, self.ampm_label = Gtk.Label(), Gtk.Label()
+        self.time = time
+
+        self.time_label.set_valign(Gtk.Align.BASELINE)
+        self.ampm_label.set_valign(Gtk.Align.BASELINE)
+
+        self.pack_start(self.time_label, expand=False, fill=True, padding=0)
+        self.pack_start(self.ampm_label, expand=False, fill=False, padding=0)
+
+
 class AlarmRow(Gtk.Box):
     def switch_toggled(self, switch, state):
         if state:
@@ -12,11 +43,25 @@ class AlarmRow(Gtk.Box):
         else:
             self.alarm.deactivate()
 
-    def __init__(self, alarm):
+    @property
+    def note(self):
+        return self._note
+
+    @note.setter
+    def note(self, value):
+        self._note = value
+        self.note_label.set_markup(
+            '<span font_size="medium">{}</span>'.format(value)
+        )
+
+
+    def __init__(self, alarm, note=''):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.time_text = TimeText(alarm.start_time)
+        self.note_label = Gtk.Label()
+        self.note = note
         self.alarm = alarm
 
-        time_box = self.create_time_label(alarm.start_time)
         more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
 
@@ -24,36 +69,10 @@ class AlarmRow(Gtk.Box):
         switch.set_valign(Gtk.Align.CENTER)
         switch.connect('state-set', self.switch_toggled)
 
-        note_label = Gtk.Label()
-        note_label.set_markup(
-            '<span font_size="medium">{}</span>'.format('Good Morning')
-        )
-
-        self.pack_start(time_box, expand=False, fill=True, padding=5)
-        self.pack_start(note_label, expand=True, fill=True, padding=0)
+        self.pack_start(self.time_text, expand=False, fill=True, padding=5)
+        self.pack_start(self.note_label, expand=True, fill=True, padding=0)
         self.pack_start(switch, expand=False, fill=True, padding=5)
         self.pack_start(more_btn, expand=False, fill=True, padding=5)
-
-    def create_time_label(self, time_obj):
-        time_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        time_label, ampm_label = Gtk.Label(), Gtk.Label()
-
-        time_label.set_valign(Gtk.Align.BASELINE)
-        ampm_label.set_valign(Gtk.Align.BASELINE)
-
-        time_str = '<span font="sans 30">{}</span>'.format(
-            time_obj.strftime('%I:%M')
-        )
-        ampm_str = '<span font="sans 10">{}</span>'.format(
-            time_obj.strftime('%p').lower()
-        )
-
-        time_label.set_markup(time_str)
-        ampm_label.set_markup(ampm_str)
-
-        time_box.pack_start(time_label, expand=False, fill=True, padding=0)
-        time_box.pack_start(ampm_label, expand=False, fill=False, padding=0)
-        return time_box
 
 
 class OverviewWindow(Gtk.Window):
@@ -87,14 +106,16 @@ class OverviewWindow(Gtk.Window):
 
         scrolled_window = Gtk.ScrolledWindow()
         alarms = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        for _ in range(1):
+
+        # Adding a couple test alarm rows
+        for _ in range(2):
             alarm_obj = alarm.Alarm(
                 utils.get_current_time(),
                 utils.get_media_uri('alarm.wav')
             )
             self.alarm_manager.add(alarm_obj)
             alarms.pack_start(
-                AlarmRow(alarm_obj),
+                AlarmRow(alarm_obj, 'Hello World'),
                 expand=False,
                 fill=True,
                 padding=5
