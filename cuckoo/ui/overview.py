@@ -3,6 +3,7 @@ import os
 import random
 
 from cuckoo import utils, alarm
+from cuckoo.ui import edit
 from gi.repository import Gtk
 
 
@@ -43,6 +44,10 @@ class AlarmRow(Gtk.Box):
         else:
             self.alarm.deactivate()
 
+    def more_btn_clicked(self, widget):
+        dialog = edit.EditDialog(self.alarm, parent=self.parent)
+        dialog.show()
+
     @property
     def note(self):
         return self._note
@@ -55,8 +60,9 @@ class AlarmRow(Gtk.Box):
         )
 
 
-    def __init__(self, alarm, note=''):
+    def __init__(self, alarm, note='', parent=None):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.parent = parent
         self.time_text = TimeText(alarm.start_time)
         self.note_label = Gtk.Label()
         self.note = note
@@ -64,6 +70,7 @@ class AlarmRow(Gtk.Box):
 
         more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
+        more_btn.connect('clicked', self.more_btn_clicked)
 
         switch = Gtk.Switch()
         switch.set_valign(Gtk.Align.CENTER)
@@ -76,10 +83,6 @@ class AlarmRow(Gtk.Box):
 
 
 class OverviewWindow(Gtk.Window):
-
-    def more_btn_clicked(self, widget):
-        print('bam')
-
     def create_header_bar(self):
         bar = Gtk.HeaderBar()
         bar.set_title('Cuckoo')
@@ -88,7 +91,6 @@ class OverviewWindow(Gtk.Window):
 
         more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
-        more_btn.connect('clicked', self.more_btn_clicked)
         bar.pack_start(more_btn)
         return bar
 
@@ -115,7 +117,7 @@ class OverviewWindow(Gtk.Window):
             )
             self.alarm_manager.add(alarm_obj)
             alarms.pack_start(
-                AlarmRow(alarm_obj, 'Hello World'),
+                AlarmRow(alarm_obj, 'Hello World', self),
                 expand=False,
                 fill=True,
                 padding=5
