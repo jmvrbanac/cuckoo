@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 def get_media_path(media_name):
+    """Gets absolute path of media assets included in the project"""
     current_path = os.path.dirname(__file__)
     rel_path = os.path.join(current_path, '..', 'media', media_name)
     return os.path.abspath(rel_path)
