@@ -59,6 +59,27 @@ class AlarmRow(Gtk.Box):
             '<span font_size="medium">{}</span>'.format(value)
         )
 
+    def _build_popover(self, parent):
+        edit, delete = Gtk.Button(label='Edit'), Gtk.Button(label='Delete')
+        edit.set_relief(Gtk.ReliefStyle.NONE)
+        delete.set_relief(Gtk.ReliefStyle.NONE)
+
+        popover = Gtk.Popover.new(parent)
+        popover.set_size_request(75, 100)
+        popover_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        popover_container.pack_start(edit, False, False, 5)
+        popover_container.pack_start(delete, False, False, 5)
+        popover.add(popover_container)
+
+        def edit_clicked(widget):
+            popover.hide()
+
+        def delete_clicked(widget):
+            popover.hide()
+
+        edit.connect('clicked', edit_clicked)
+        delete.connect('clicked', delete_clicked)
+        return popover
 
     def __init__(self, alarm, note='', parent=None):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
@@ -68,15 +89,10 @@ class AlarmRow(Gtk.Box):
         self.note = note
         self.alarm = alarm
 
-        more_btn = Gtk.MenuButton()
+        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
-        popover_menu = Gio.Menu()
-        popover_menu.append('Edit')
-        popover_menu.append('Delete')
-        more_btn.set_popover(Gtk.Popover.new_from_model(self, popover_menu))
-        # more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
-        # more_btn.set_relief(Gtk.ReliefStyle.NONE)
-        # more_btn.connect('clicked', self.more_btn_clicked)
+        popover = self._build_popover(more_btn)
+        more_btn.connect('clicked', lambda x: popover.show_all())
 
         switch = Gtk.Switch()
         switch.set_valign(Gtk.Align.CENTER)
