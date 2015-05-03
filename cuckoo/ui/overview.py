@@ -4,7 +4,7 @@ import random
 
 from cuckoo import utils, alarm
 from cuckoo.ui import edit
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 
 
 class TimeText(Gtk.Box):
@@ -68,9 +68,15 @@ class AlarmRow(Gtk.Box):
         self.note = note
         self.alarm = alarm
 
-        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        more_btn = Gtk.MenuButton()
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
-        more_btn.connect('clicked', self.more_btn_clicked)
+        popover_menu = Gio.Menu()
+        popover_menu.append('Edit')
+        popover_menu.append('Delete')
+        more_btn.set_popover(Gtk.Popover.new_from_model(self, popover_menu))
+        # more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        # more_btn.set_relief(Gtk.ReliefStyle.NONE)
+        # more_btn.connect('clicked', self.more_btn_clicked)
 
         switch = Gtk.Switch()
         switch.set_valign(Gtk.Align.CENTER)
