@@ -44,10 +44,6 @@ class AlarmRow(Gtk.Box):
         else:
             self.alarm.deactivate()
 
-    def more_btn_clicked(self, widget):
-        dialog = edit.EditDialog(self.alarm, parent=self.parent)
-        dialog.show()
-
     @property
     def note(self):
         return self._note
@@ -60,25 +56,28 @@ class AlarmRow(Gtk.Box):
         )
 
     def _build_popover(self, parent):
-        edit, delete = Gtk.Button(label='Edit'), Gtk.Button(label='Delete')
-        edit.set_relief(Gtk.ReliefStyle.NONE)
-        delete.set_relief(Gtk.ReliefStyle.NONE)
+        edit_btn = Gtk.Button(label='Edit')
+        delete_btn = Gtk.Button(label='Delete')
+        edit_btn.set_relief(Gtk.ReliefStyle.NONE)
+        delete_btn.set_relief(Gtk.ReliefStyle.NONE)
 
         popover = Gtk.Popover.new(parent)
         popover.set_size_request(75, 100)
         popover_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        popover_container.pack_start(edit, False, False, 5)
-        popover_container.pack_start(delete, False, False, 5)
+        popover_container.pack_start(edit_btn, False, False, 5)
+        popover_container.pack_start(delete_btn, False, False, 5)
         popover.add(popover_container)
 
         def edit_clicked(widget):
             popover.hide()
+            dialog = edit.EditDialog(self.alarm, parent=self.parent)
+            dialog.show()
 
         def delete_clicked(widget):
             popover.hide()
 
-        edit.connect('clicked', edit_clicked)
-        delete.connect('clicked', delete_clicked)
+        edit_btn.connect('clicked', edit_clicked)
+        delete_btn.connect('clicked', delete_clicked)
         return popover
 
     def __init__(self, alarm, note='', parent=None):
