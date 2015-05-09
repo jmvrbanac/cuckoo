@@ -18,6 +18,11 @@ class Alarm(object):
         self.activated = False
         self.player.stop()
 
+    @property
+    def time_tuple(self):
+        hour, minute, ampm = self.start_time.strftime('%I|%M|%p').split('|')
+        return int(hour), int(minute), ampm
+
 
 class AlarmManager(object):
 
