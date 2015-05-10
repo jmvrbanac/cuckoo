@@ -34,6 +34,7 @@ class AlarmManager(object):
         self.alarms.append(alarm)
 
     def remove(self, alarm):
+        alarm.deactivate()
         self.alarms.remove(alarm)
 
     def _handle_alarms(self):
