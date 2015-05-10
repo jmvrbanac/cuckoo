@@ -69,8 +69,15 @@ class AlarmRow(Gtk.Box):
         popover.add(popover_container)
 
         def edit_clicked(widget):
+            def dialog_closed(dialog, response_id):
+                if response_id == Gtk.ResponseType.CLOSE:
+                    # Refresh stored and presented time
+                    self.alarm.start_time = dialog.ui_input_time
+                    self.time_text.time = self.alarm.start_time
+
             popover.hide()
             dialog = edit.EditDialog(self.alarm, parent=self.parent)
+            dialog.connect('response', dialog_closed)
             dialog.show()
 
         def delete_clicked(widget):
