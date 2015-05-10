@@ -9,9 +9,22 @@ class EditDialog(Gtk.Dialog):
         self.set_default_size(200, 200)
         self.alarm = alarm
 
+        sound_file_chooser = Gtk.FileChooserButton(title='Choose Sound File')
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name('Sound Files')
+        file_filter.add_pattern('*.wav')
+        file_filter.add_pattern('*.mp3')
+        file_filter.add_pattern('*.ogg')
+        sound_file_chooser.add_filter(file_filter)
+
+
         layout = self.get_content_area()
-        layout.pack_start(Gtk.Label('Alarm Time'), False, True, 0)
-        layout.pack_start(self.build_edit_time_button_row(), False, False, 0)
+        audio_file_label = Gtk.Label('Audio File', xalign=0, xpad=5)
+        alarm_time_label = Gtk.Label('Alarm Time', xalign=0, xpad=5)
+        layout.pack_start(audio_file_label, True, False, 5)
+        layout.pack_start(sound_file_chooser, False, True, 5)
+        layout.pack_start(alarm_time_label, True, False, 5)
+        layout.pack_start(self.build_edit_time_button_row(), False, False, 5)
 
         self.add_button('Close', Gtk.ResponseType.CLOSE)
         self.connect('response', self.handle_response)
@@ -31,9 +44,9 @@ class EditDialog(Gtk.Dialog):
         minute_spinner.set_value(minute)
         ampm_box.set_active(0 if ampm == 'AM' else 1)
 
-        time_row.pack_start(hour_spinner, True, False, 0)
-        time_row.pack_start(minute_spinner, True, False, 0)
-        time_row.pack_start(ampm_box, True, False, 0)
+        time_row.pack_start(hour_spinner, True, True, 5)
+        time_row.pack_start(minute_spinner, True, True, 5)
+        time_row.pack_start(ampm_box, True, True, 5)
 
         self.hour_spinner = hour_spinner
         self.minute_spinner = minute_spinner
