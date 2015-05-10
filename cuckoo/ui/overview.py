@@ -8,7 +8,19 @@ from gi.repository import Gtk, Gio
 
 alarm_manager = alarm.AlarmManager()
 
+
 class TimeText(Gtk.Box):
+    def __init__(self, time):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.time_label, self.ampm_label = Gtk.Label(), Gtk.Label()
+        self.time = time
+
+        self.time_label.set_valign(Gtk.Align.BASELINE)
+        self.ampm_label.set_valign(Gtk.Align.BASELINE)
+
+        self.pack_start(self.time_label, expand=False, fill=True, padding=0)
+        self.pack_start(self.ampm_label, expand=False, fill=False, padding=0)
+
     @property
     def time(self):
         return self._time
@@ -26,19 +38,30 @@ class TimeText(Gtk.Box):
         self.time_label.set_markup(time_str)
         self.ampm_label.set_markup(ampm_str)
 
-    def __init__(self, time):
-        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
-        self.time_label, self.ampm_label = Gtk.Label(), Gtk.Label()
-        self.time = time
-
-        self.time_label.set_valign(Gtk.Align.BASELINE)
-        self.ampm_label.set_valign(Gtk.Align.BASELINE)
-
-        self.pack_start(self.time_label, expand=False, fill=True, padding=0)
-        self.pack_start(self.ampm_label, expand=False, fill=False, padding=0)
-
 
 class AlarmRow(Gtk.Box):
+    def __init__(self, alarm, note='', parent=None):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.parent = parent
+        self.time_text = TimeText(alarm.start_time)
+        self.note_label = Gtk.Label()
+        self.note = note
+        self.alarm = alarm
+
+        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        more_btn.set_relief(Gtk.ReliefStyle.NONE)
+        popover = self._build_popover(more_btn)
+        more_btn.connect('clicked', lambda x: popover.show_all())
+
+        switch = Gtk.Switch()
+        switch.set_valign(Gtk.Align.CENTER)
+        switch.connect('state-set', self.switch_toggled)
+
+        self.pack_start(self.time_text, expand=False, fill=True, padding=5)
+        self.pack_start(self.note_label, expand=True, fill=True, padding=0)
+        self.pack_start(switch, expand=False, fill=True, padding=5)
+        self.pack_start(more_btn, expand=False, fill=True, padding=5)
+
     def switch_toggled(self, switch, state):
         if state:
             self.alarm.activate()
@@ -90,41 +113,8 @@ class AlarmRow(Gtk.Box):
         delete_btn.connect('clicked', delete_clicked)
         return popover
 
-    def __init__(self, alarm, note='', parent=None):
-        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
-        self.parent = parent
-        self.time_text = TimeText(alarm.start_time)
-        self.note_label = Gtk.Label()
-        self.note = note
-        self.alarm = alarm
-
-        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
-        more_btn.set_relief(Gtk.ReliefStyle.NONE)
-        popover = self._build_popover(more_btn)
-        more_btn.connect('clicked', lambda x: popover.show_all())
-
-        switch = Gtk.Switch()
-        switch.set_valign(Gtk.Align.CENTER)
-        switch.connect('state-set', self.switch_toggled)
-
-        self.pack_start(self.time_text, expand=False, fill=True, padding=5)
-        self.pack_start(self.note_label, expand=True, fill=True, padding=0)
-        self.pack_start(switch, expand=False, fill=True, padding=5)
-        self.pack_start(more_btn, expand=False, fill=True, padding=5)
-
 
 class OverviewWindow(Gtk.Window):
-    def create_header_bar(self):
-        bar = Gtk.HeaderBar()
-        bar.set_title('Cuckoo')
-        bar.set_show_close_button(True)
-        bar.set_property('border-width', 0)
-
-        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
-        more_btn.set_relief(Gtk.ReliefStyle.NONE)
-        bar.pack_start(more_btn)
-        return bar
-
     def __init__(self):
         super().__init__(title='Cuckoo')
         self.set_default_size(500, 345)
@@ -157,3 +147,14 @@ class OverviewWindow(Gtk.Window):
         self.add(scrolled_window)
 
         self.connect("delete-event", Gtk.main_quit)
+
+    def create_header_bar(self):
+        bar = Gtk.HeaderBar()
+        bar.set_title('Cuckoo')
+        bar.set_show_close_button(True)
+        bar.set_property('border-width', 0)
+
+        more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        more_btn.set_relief(Gtk.ReliefStyle.NONE)
+        bar.pack_start(more_btn)
+        return bar
