@@ -6,6 +6,7 @@ from cuckoo import utils, alarm
 from cuckoo.ui import edit
 from gi.repository import Gtk, Gio
 
+alarm_manager = alarm.AlarmManager()
 
 class TimeText(Gtk.Box):
     @property
@@ -81,6 +82,8 @@ class AlarmRow(Gtk.Box):
             dialog.show()
 
         def delete_clicked(widget):
+            self.parent.alarms_box.remove(self)
+            alarm_manager.remove(self.alarm)
             popover.hide()
 
         edit_btn.connect('clicked', edit_clicked)
@@ -127,7 +130,6 @@ class OverviewWindow(Gtk.Window):
         self.set_default_size(500, 345)
         self.set_border_width(1)
         self.set_titlebar(self.create_header_bar())
-        self.alarm_manager = alarm.AlarmManager()
 
         # TODO(jmvrbanac): Fix icon sourcing
         icon_path = utils.get_media_path('clock.svg')
@@ -135,7 +137,7 @@ class OverviewWindow(Gtk.Window):
             self.set_default_icon_from_file(icon_path)
 
         scrolled_window = Gtk.ScrolledWindow()
-        alarms = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.alarms_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         # Adding a couple test alarm rows
         for _ in range(2):
@@ -143,15 +145,15 @@ class OverviewWindow(Gtk.Window):
                 utils.get_current_time(),
                 utils.get_media_uri('alarm.wav')
             )
-            self.alarm_manager.add(alarm_obj)
-            alarms.pack_start(
+            alarm_manager.add(alarm_obj)
+            self.alarms_box.pack_start(
                 AlarmRow(alarm_obj, 'Hello World', self),
                 expand=False,
                 fill=True,
                 padding=5
             )
 
-        scrolled_window.add_with_viewport(alarms)
+        scrolled_window.add_with_viewport(self.alarms_box)
         self.add(scrolled_window)
 
         self.connect("delete-event", Gtk.main_quit)

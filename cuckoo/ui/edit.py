@@ -52,6 +52,4 @@ class EditDialog(Gtk.Dialog):
     def handle_response(self, dialog, response_id):
         if (response_id == Gtk.ResponseType.CLOSE or
             response_id == Gtk.ResponseType.DELETE_EVENT):
-               self.alarm.start_time = self.ui_input_time
                self.close()
-
