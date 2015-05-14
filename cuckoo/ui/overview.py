@@ -2,11 +2,12 @@ import datetime
 import os
 import random
 
-from cuckoo import utils, alarm
+from cuckoo import utils, alarm, config
 from cuckoo.ui import edit
 from gi.repository import Gtk, Gio
 
 alarm_manager = alarm.AlarmManager()
+cfg = config.CuckooConfig.load()
 
 
 class TimeText(Gtk.Box):
