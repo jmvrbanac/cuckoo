@@ -19,6 +19,14 @@ class Alarm(object):
         self.player.stop()
 
     @property
+    def filename(self):
+        return self.player.filename
+
+    @filename.setter
+    def filename(self, value):
+        self.player.filename = value
+
+    @property
     def time_tuple(self):
         hour, minute, ampm = self.start_time.strftime('%I|%M|%p').split('|')
         return int(hour), int(minute), ampm

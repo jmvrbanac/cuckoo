@@ -97,6 +97,7 @@ class AlarmRow(Gtk.Box):
                 if response_id == Gtk.ResponseType.CLOSE:
                     # Refresh stored and presented time
                     self.alarm.start_time = dialog.ui_input_time
+                    self.alarm.filename = dialog.selected_filename
                     self.time_text.time = self.alarm.start_time
 
             popover.hide()

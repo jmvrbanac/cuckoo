@@ -9,20 +9,20 @@ class EditDialog(Gtk.Dialog):
         self.set_default_size(200, 200)
         self.alarm = alarm
 
-        sound_file_chooser = Gtk.FileChooserButton(title='Choose Sound File')
+        self.sound_file_chooser = Gtk.FileChooserButton(title='Choose Sound File')
         file_filter = Gtk.FileFilter()
         file_filter.set_name('Sound Files')
         file_filter.add_pattern('*.wav')
         file_filter.add_pattern('*.mp3')
         file_filter.add_pattern('*.ogg')
-        sound_file_chooser.add_filter(file_filter)
-
+        self.sound_file_chooser.add_filter(file_filter)
+        self.sound_file_chooser.set_uri(self.alarm.filename)
 
         layout = self.get_content_area()
         audio_file_label = Gtk.Label('Audio File', xalign=0, xpad=5)
         alarm_time_label = Gtk.Label('Alarm Time', xalign=0, xpad=5)
         layout.pack_start(audio_file_label, True, False, 5)
-        layout.pack_start(sound_file_chooser, False, True, 5)
+        layout.pack_start(self.sound_file_chooser, False, True, 5)
         layout.pack_start(alarm_time_label, True, False, 5)
         layout.pack_start(self.build_edit_time_button_row(), False, False, 5)
 
@@ -52,6 +52,10 @@ class EditDialog(Gtk.Dialog):
         self.minute_spinner = minute_spinner
         self.ampm_box = ampm_box
         return time_row
+
+    @property
+    def selected_filename(self):
+        return self.sound_file_chooser.get_uri()
 
     @property
     def ui_input_time(self):
