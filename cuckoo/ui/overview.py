@@ -131,12 +131,7 @@ class OverviewWindow(Gtk.Window):
         scrolled_window = Gtk.ScrolledWindow()
         self.alarms_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        # Adding a couple test alarm rows
-        for _ in range(2):
-            alarm_obj = alarm.Alarm(
-                utils.get_current_time(),
-                utils.get_media_uri('alarm.wav')
-            )
+        for alarm_obj in cfg.alarms:
             alarm_manager.add(alarm_obj)
             self.alarms_box.pack_start(
                 AlarmRow(alarm_obj, 'Hello World', self),
@@ -156,7 +151,34 @@ class OverviewWindow(Gtk.Window):
         bar.set_show_close_button(True)
         bar.set_property('border-width', 0)
 
+        add_btn = Gtk.Button(label='Add')
         more_btn = Gtk.Button.new_from_icon_name('view-more-symbolic', 4)
+        popover = Gtk.Popover.new(more_btn)
+
+        popover.set_size_request(75, 50)
+        popover_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        popover_container.pack_start(add_btn, False, False, 5)
+        popover.add(popover_container)
+
+        add_btn.set_relief(Gtk.ReliefStyle.NONE)
         more_btn.set_relief(Gtk.ReliefStyle.NONE)
+
+        def add_new_alarm(widget):
+            popover.hide()
+            alarm_obj = alarm.Alarm(
+                utils.format_time_str('7:00 AM'),
+                utils.get_media_uri('alarm.wav')
+            )
+            alarm_manager.add(alarm_obj)
+            self.alarms_box.pack_start(
+                AlarmRow(alarm_obj, 'Good Morning', self),
+                expand=False,
+                fill=True,
+                padding=5
+            )
+            self.alarms_box.show_all()
+
+        add_btn.connect('clicked', add_new_alarm)
+        more_btn.connect('clicked', lambda x: popover.show_all())
         bar.pack_start(more_btn)
         return bar
