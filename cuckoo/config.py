@@ -1,9 +1,7 @@
 from collections import namedtuple
-from cuckoo import utils
+from cuckoo import utils, alarm
 import os
 import json
-
-AlarmData = namedtuple('AlarmData', ['time', 'uri', 'active', 'note'])
 
 
 class CuckooConfig(object):
@@ -31,14 +29,8 @@ class CuckooConfig(object):
             json_dict = json.load(config_file)
 
             cfg.default_alarm_uri = json_dict.get('default_alarm_uri', '')
-            for alarm_dict in json_dict.get('alarms', []):
-                alarm = AlarmData(
-                    time=alarm_dict.get('time', '12:00 AM'),
-                    uri=alarm_dict.get('uri', self.default_alarm_uri),
-                    active=alarm_dict.get('active', False),
-                    note=alarm_dict.get('note', 'Good Morning')
-                )
-                cfg.alarms.append(alarm)
+            cfg.alarms = [alarm.Alarm.from_dict(alarm_data)
+                          for alarm_data in json_dict.get('alarms', [])]
         return cfg
 
     def save(self, filename=None):

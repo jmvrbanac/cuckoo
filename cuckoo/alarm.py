@@ -3,10 +3,12 @@ from cuckoo import player, utils
 
 
 class Alarm(object):
-    def __init__(self, start_time, filename, loop=True):
+    def __init__(self, start_time, filename, loop=True, activated=False,
+                 note=''):
         self.player = player.AudioPlayer(filename, loop)
         self.start_time = start_time
-        self.activated = False
+        self.activated = activated
+        self.note = note
 
     def sound(self):
         self.player.play()
@@ -17,6 +19,23 @@ class Alarm(object):
     def deactivate(self):
         self.activated = False
         self.player.stop()
+
+    def to_dict(self):
+        return {
+            'time': utils.time_to_str(start_time),
+            'uri': self.filename,
+            'active': self.activated,
+            'note': self.note
+        }
+
+    @classmethod
+    def from_dict(cls, alarm_dict):
+        return cls(
+            start_time=utils.format_time_str(alarm_dict.get('time')),
+            filename=alarm_dict.get('uri'),
+            activated=alarm_dict.get('active'),
+            note=alarm_dict.get('note')
+        )
 
     @property
     def filename(self):
