@@ -5,7 +5,7 @@ from cuckoo import utils
 class EditDialog(Gtk.Dialog):
 
     def __init__(self, alarm, parent=None):
-        super().__init__(title='Edit Alarm', parent=parent)
+        super(EditDialog, self).__init__(title='Edit Alarm', parent=parent)
         self.set_default_size(200, 200)
         self.alarm = alarm
 

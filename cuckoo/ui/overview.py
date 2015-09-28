@@ -12,7 +12,7 @@ cfg = config.CuckooConfig.load()
 
 class TimeText(Gtk.Box):
     def __init__(self, time):
-        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        super(TimeText, self).__init__(orientation=Gtk.Orientation.HORIZONTAL)
         self.time_label, self.ampm_label = Gtk.Label(), Gtk.Label()
         self.time = time
 
@@ -42,7 +42,7 @@ class TimeText(Gtk.Box):
 
 class AlarmRow(Gtk.Box):
     def __init__(self, alarm, note='', parent=None):
-        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        super(AlarmRow, self).__init__(orientation=Gtk.Orientation.HORIZONTAL)
         self.parent = parent
         self.time_text = TimeText(alarm.start_time)
         self.note_label = Gtk.Label()
@@ -118,7 +118,7 @@ class AlarmRow(Gtk.Box):
 
 class OverviewWindow(Gtk.Window):
     def __init__(self):
-        super().__init__(title='Cuckoo')
+        super(OverviewWindow, self).__init__(title='Cuckoo')
         self.set_default_size(500, 345)
         self.set_border_width(1)
         self.set_titlebar(self.create_header_bar())

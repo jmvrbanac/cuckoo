@@ -1,4 +1,4 @@
-from urllib import parse
+from six.moves import urllib
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -47,7 +47,7 @@ class AudioPlayer(object):
 
     @filename.setter
     def filename(self, value):
-        parsed = parse.urlparse(value)
+        parsed = urllib.parse.urlparse(value)
         if parsed and not parsed.scheme:
             raise ValueError('Must include a valid uri {}'.format(value))
         self._filename = value
