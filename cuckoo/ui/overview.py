@@ -58,6 +58,12 @@ class AlarmRow(Gtk.Box):
         switch.set_valign(Gtk.Align.CENTER)
         switch.connect('state-set', self.switch_toggled)
 
+        # Syncing new note name
+        alarm.note = note
+
+        # Syncing saved switch state
+        switch.set_active(alarm.activated)
+
         self.pack_start(self.time_text, expand=False, fill=True, padding=5)
         self.pack_start(self.note_label, expand=True, fill=True, padding=0)
         self.pack_start(switch, expand=False, fill=True, padding=5)
@@ -134,7 +140,7 @@ class OverviewWindow(Gtk.Window):
         for alarm_obj in cfg.alarms:
             alarm_manager.add(alarm_obj)
             self.alarms_box.pack_start(
-                AlarmRow(alarm_obj, 'Hello World', self),
+                AlarmRow(alarm_obj, alarm_obj.note, self),
                 expand=False,
                 fill=True,
                 padding=5
@@ -143,7 +149,11 @@ class OverviewWindow(Gtk.Window):
         scrolled_window.add_with_viewport(self.alarms_box)
         self.add(scrolled_window)
 
-        self.connect("delete-event", Gtk.main_quit)
+        self.connect("delete-event", self.close_window)
+
+    def close_window(self, event, data):
+        cfg.save(alarm_manager.alarms)
+        Gtk.main_quit(self, event, data)
 
     def create_header_bar(self):
         bar = Gtk.HeaderBar()

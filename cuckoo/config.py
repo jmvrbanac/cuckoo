@@ -22,7 +22,7 @@ class CuckooConfig(object):
         real_path = filename or cls.default_filename
         if not os.path.exists(real_path):
             print("Couldn't load config... Creating a new config")
-            cfg.save()
+            cfg.save(alarms=[])
             return cfg
 
         with open(real_path, 'r') as config_file:
@@ -33,12 +33,12 @@ class CuckooConfig(object):
                           for alarm_data in json_dict.get('alarms', [])]
         return cfg
 
-    def save(self, filename=None):
+    def save(self, alarms, filename=None):
         real_path = filename or self.filename
 
         with open(real_path, 'w+') as config_file:
             config_dict = {
                 'default_alarm_uri': self.default_alarm_uri,
-                'alarms': []
+                'alarms': [alarm.to_dict() for alarm in alarms]
             }
             json.dump(config_dict, config_file, indent=4)

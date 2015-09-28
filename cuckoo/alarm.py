@@ -22,7 +22,7 @@ class Alarm(object):
 
     def to_dict(self):
         return {
-            'time': utils.time_to_str(start_time),
+            'time': utils.time_to_str(self.start_time),
             'uri': self.filename,
             'active': self.activated,
             'note': self.note
