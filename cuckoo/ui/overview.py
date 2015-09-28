@@ -105,7 +105,10 @@ class AlarmRow(Gtk.Box):
                     # Refresh stored and presented time
                     self.alarm.start_time = dialog.ui_input_time
                     self.alarm.filename = dialog.selected_filename
+                    self.alarm.note = dialog.note_text.get_text()
+
                     self.time_text.time = self.alarm.start_time
+                    self.note = self.alarm.note
 
             popover.hide()
             dialog = edit.EditDialog(self.alarm, parent=self.parent)

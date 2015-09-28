@@ -21,6 +21,7 @@ class EditDialog(Gtk.Dialog):
         layout = self.get_content_area()
         audio_file_label = Gtk.Label('Audio File', xalign=0, xpad=5)
         alarm_time_label = Gtk.Label('Alarm Time', xalign=0, xpad=5)
+        layout.pack_start(self.build_edit_alarm_note_row(), False, False, 5)
         layout.pack_start(audio_file_label, True, False, 5)
         layout.pack_start(self.sound_file_chooser, False, True, 5)
         layout.pack_start(alarm_time_label, True, False, 5)
@@ -30,6 +31,19 @@ class EditDialog(Gtk.Dialog):
         self.connect('response', self.handle_response)
 
         self.show_all()
+
+    def build_edit_alarm_note_row(self):
+        note_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        label = Gtk.Label(xpad=5)
+        label.set_valign(Gtk.Align.BASELINE)
+        label.set_markup('<span font="sans 10">Note:</span>')
+
+        self.note_text = Gtk.Entry()
+        self.note_text.set_text(self.alarm.note)
+
+        note_row.pack_start(label, expand=False, fill=True, padding=0)
+        note_row.pack_start(self.note_text, expand=False, fill=True, padding=0)
+        return note_row
 
     def build_edit_time_button_row(self):
         time_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
